@@ -1,0 +1,323 @@
+/* A4 Page Setup */
+:root {
+  --page-width: 210mm;
+  --page-height: 297mm;
+  --page-margin: 20mm;
+  --content-width: calc(var(--page-width) - (var(--page-margin) * 2));
+}
+
+/* Reset for PDF container */
+.pdf-print {
+  background: white;
+  width: var(--page-width);
+  min-height: var(--page-height);
+  margin: 0;
+  padding: var(--page-margin);
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden; /* Prevent content overflow */
+}
+
+/* Base Container */
+.pdf-container {
+  width: var(--content-width);
+  min-height: calc(var(--page-height) - (var(--page-margin) * 2));
+  position: relative;
+  background: white;
+  font-family: Arial, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content wrapper to ensure footer stays at bottom */
+.pdf-content {
+  flex: 1 0 auto;
+  padding-bottom: 40mm; /* Space for footer */
+  width: 100%;
+  max-width: var(--content-width);
+}
+
+/* Header Styles */
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20mm;
+  position: relative;
+  width: 100%;
+}
+
+.pdf-logo {
+  width: 130px;
+  height: auto;
+}
+
+.pdf-title {
+  text-align: right;
+}
+
+.pdf-title h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 2mm 0;
+  color: #000;
+}
+
+.pdf-title p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Address Sections */
+.pdf-addresses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10mm;
+  margin-bottom: 15mm;
+  width: 100%;
+}
+
+.address-block {
+  margin-bottom: 10mm;
+}
+
+.address-block h2 {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 2mm 0;
+  color: #000;
+}
+
+.address-content {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.address-content p {
+  margin: 0 0 1mm 0;
+  word-break: break-word; /* Prevent text overflow */
+}
+
+/* Quote Details Table */
+.quote-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15mm 0;
+  table-layout: fixed; /* Fixed table layout */
+}
+
+.quote-table th {
+  text-align: left;
+  padding: 2mm;
+  font-weight: 600;
+  border-top: 0.2mm solid #000;
+  border-bottom: 0.2mm solid #000;
+  font-size: 12px;
+}
+
+.quote-table td {
+  padding: 2mm;
+  border-bottom: 0.1mm solid #ddd;
+  font-size: 12px;
+  vertical-align: top;
+  word-wrap: break-word; /* Allow word wrapping in cells */
+}
+
+.description-header {
+  width: 60%;
+}
+
+.quantity-header {
+  width: 20%;
+}
+
+.total-header {
+  width: 20%;
+  text-align: right;
+}
+
+.quote-detail-row {
+  margin-bottom: 1mm;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4mm;
+  word-break: break-word; /* Prevent text overflow */
+}
+
+/* Summary Section */
+.summary-section {
+  margin-top: 10mm;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.totals-block {
+  width: 60mm;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 1mm;
+  padding: 1mm 0;
+}
+
+.grand-total {
+  border-top: 0.2mm solid #000;
+  margin-top: 2mm;
+  padding-top: 2mm;
+  font-weight: bold;
+}
+
+/* Banking Details */
+.banking-details {
+  margin-top: 5mm;
+  padding-top: 5mm;
+  border-top: 0.1mm solid #ddd;
+}
+
+.banking-title {
+  font-weight: bold;
+  margin-bottom: 2mm;
+  font-size: 12px;
+}
+
+.banking-grid {
+  display: grid;
+  gap: 1mm;
+  font-size: 12px;
+}
+
+.banking-row {
+  display: grid;
+  grid-template-columns: 30mm 1fr;
+  gap: 2mm;
+}
+
+/* Terms Section */
+.terms-section {
+  margin-top: 15mm;
+  page-break-before: always;
+  width: 100%;
+}
+
+.terms-block {
+  margin-bottom: 10mm;
+}
+
+.terms-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 3mm;
+  color: #000;
+}
+
+.terms-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+
+.terms-list li {
+  margin-bottom: 2mm;
+  padding-left: 5mm;
+  position: relative;
+}
+
+.terms-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+
+.sub-terms-list {
+  list-style-type: none;
+  padding-left: 5mm;
+  margin: 2mm 0;
+}
+
+.sub-terms-list li {
+  margin-bottom: 1mm;
+}
+
+.sub-terms-list li:before {
+  content: "-";
+}
+
+/* Footer */
+.pdf-footer {
+  position: fixed;
+  bottom: var(--page-margin);
+  left: var(--page-margin);
+  right: var(--page-margin);
+  text-align: center;
+  padding-top: 2mm;
+  border-top: 0.1mm solid #ddd;
+  font-size: 8px;
+  color: #666;
+  background: white;
+  height: 20mm; /* Fixed height for footer */
+  width: var(--content-width);
+}
+
+.pdf-footer p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body {
+    width: var(--page-width);
+    height: var(--page-height);
+    margin: 0;
+    padding: 0;
+  }
+
+  .pdf-print {
+    padding: var(--page-margin);
+    margin: 0;
+    height: var(--page-height);
+    page-break-after: always;
+    overflow: hidden;
+  }
+
+  .pdf-container {
+    height: calc(var(--page-height) - (var(--page-margin) * 2));
+    overflow: visible;
+  }
+
+  .pdf-content {
+    min-height: calc(var(--page-height) - (var(--page-margin) * 3));
+  }
+
+  .pdf-footer {
+    position: fixed;
+    bottom: var(--page-margin);
+    left: var(--page-margin);
+    right: var(--page-margin);
+    background: white;
+  }
+
+  /* Ensure content stays within bounds */
+  * {
+    overflow: visible !important;
+  }
+
+  /* Force page breaks */
+  .terms-section {
+    page-break-before: always;
+  }
+}
