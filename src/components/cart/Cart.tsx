@@ -11,7 +11,6 @@ import { useToast } from '../../hooks/use-toast';
 import { useCartStore } from '../../store/cartStore';
 import { useCustomerStore } from '../../store/customerStore';
 import { useSavedQuotesStore } from '../../store/savedQuotesStore';
-import { useQuoteBuilderStore } from '../../store/quoteBuilderStore';
 import type { WooCustomer } from '../../types/customer.types';
 import {
  AlertDialog,
@@ -39,7 +38,6 @@ export function Cart() {
  const { items, updateItem, removeItem, clearItems } = useCartStore();
  const { selectedCustomer, selectCustomer, clearSelection } = useCustomerStore();
  const { saveQuote, saving, error: saveError } = useSavedQuotesStore();
- const { layoutResult, sheetsRequired } = useQuoteBuilderStore();
  const [showSaveDialog, setShowSaveDialog] = useState(false);
  const [savedReference, setSavedReference] = useState<string | null>(null);
  const { toast } = useToast();
@@ -129,25 +127,9 @@ export function Cart() {
        total: quoteTotals.total
      };
 
-     // Update items with layout info if available
-     const itemsWithLayout = items.map(item => {
-       if (layoutResult && typeof sheetsRequired === 'number') {
-         return {
-           ...item,
-           layoutInfo: {
-             repeats: layoutResult.repeats,
-             across: layoutResult.across,
-             down: layoutResult.down,
-             isLandscape: layoutResult.isLandscape,
-             sheetsRequired
-           }
-         };
-       }
-       return item;
-     });
-
+     // Pass items directly without modifying their layout info
      const { reference } = await saveQuote(
-       itemsWithLayout, 
+       items, 
        selectedCustomer!, 
        discountInfo
      );
