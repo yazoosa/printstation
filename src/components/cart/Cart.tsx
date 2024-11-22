@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';  // Add useCallback to imports
 import { useNavigate } from 'react-router-dom';
 import { CartSearch } from './CartSearch';
 import { CartItem } from './CartItem';
@@ -129,21 +129,27 @@ export function Cart() {
        total: quoteTotals.total
      };
 
-     let layoutCalculations;
-     if (layoutResult && typeof sheetsRequired === 'number') {
-       layoutCalculations = {
-         repeats: layoutResult.repeats,
-         layout: layoutResult.across * layoutResult.down,
-         sheets: sheetsRequired
-       };
-       console.log('Saving with layout calculations:', layoutCalculations);
-     }
+     // Update items with layout info if available
+     const itemsWithLayout = items.map(item => {
+       if (layoutResult && typeof sheetsRequired === 'number') {
+         return {
+           ...item,
+           layoutInfo: {
+             repeats: layoutResult.repeats,
+             across: layoutResult.across,
+             down: layoutResult.down,
+             isLandscape: layoutResult.isLandscape,
+             sheetsRequired
+           }
+         };
+       }
+       return item;
+     });
 
      const { reference } = await saveQuote(
-       items, 
+       itemsWithLayout, 
        selectedCustomer!, 
-       discountInfo,
-       layoutCalculations
+       discountInfo
      );
      
      setSavedReference(reference);
@@ -168,10 +174,10 @@ export function Cart() {
    navigate('/quotes');
  };
 
- const handleTotalsChange = (values: QuoteTotals) => {
-   console.log('Totals changed:', values);
-   setQuoteTotals(values);
- };
+ const handleTotalsChange = useCallback((values: QuoteTotals) => {
+  console.log('Totals changed:', values);
+  setQuoteTotals(values);
+}, []); // Add empty dependency array
 
  return (
    <>

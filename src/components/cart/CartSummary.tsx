@@ -20,24 +20,24 @@ export function CartSummary({ subtotal: initialSubtotal, onTotalsChange }: CartS
  const [discountPercent, setDiscountPercent] = useState<string>('');
  const [discountValue, setDiscountValue] = useState<string>('');
 
- // Calculate discount on the pre-VAT amount (initialSubtotal)
-const calculatedDiscount = discountPercent 
-? Number((initialSubtotal * (parseFloat(discountPercent) / 100)).toFixed(2))
-: discountValue 
-? Number(parseFloat(discountValue).toFixed(2))
-: 0;
+ // Calculate discount on the pre-VAT amount
+ const calculatedDiscount = discountPercent 
+   ? Number((initialSubtotal * (parseFloat(discountPercent) / 100)).toFixed(2))
+   : discountValue 
+   ? Number(parseFloat(discountValue).toFixed(2))
+   : 0;
 
-// Ensure discount doesn't exceed initial subtotal and round to 2 decimals
-const finalDiscount = Number(Math.min(calculatedDiscount, initialSubtotal).toFixed(2));
+ const finalDiscount = Number(Math.min(calculatedDiscount, initialSubtotal).toFixed(2));
+ const discountedSubtotal = Number((initialSubtotal - finalDiscount).toFixed(2));
+ const calculatedVat = Number((discountedSubtotal * 0.15).toFixed(2));
+ const finalTotal = Number((discountedSubtotal + calculatedVat).toFixed(2));
 
-// Calculate subtotal after discount (pre-VAT)
-const discountedSubtotal = Number((initialSubtotal - finalDiscount).toFixed(2));
-
-// Calculate VAT on the discounted subtotal
-const calculatedVat = Number((discountedSubtotal * 0.15).toFixed(2));
-
-// Calculate final total (discounted subtotal + VAT)
-const finalTotal = Number((discountedSubtotal + calculatedVat).toFixed(2));
+ // Calculate the effective discount percentage when a value is entered
+ const effectiveDiscountPercentage = discountValue 
+   ? Number(((finalDiscount / initialSubtotal) * 100).toFixed(2))
+   : discountPercent 
+   ? parseFloat(discountPercent)
+   : undefined;
 
  const handlePercentChange = (value: string) => {
    if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
@@ -55,33 +55,39 @@ const finalTotal = Number((discountedSubtotal + calculatedVat).toFixed(2));
 
  // Notify parent of changes
  useEffect(() => {
-   if (onTotalsChange) {
-     const totals = {
-       subtotal: initialSubtotal,
-       vat: calculatedVat,
-       total: finalTotal,
-       discount_percentage: discountPercent ? parseFloat(discountPercent) : undefined,
-       discount_value: finalDiscount > 0 ? finalDiscount : undefined,
-       subtotal_after_discount: finalDiscount > 0 ? discountedSubtotal : undefined
-     };
-     
-     console.log('Calculated totals:', {
-       original_subtotal: initialSubtotal,
-       discount: finalDiscount,
-       discounted_subtotal: discountedSubtotal,
-       vat: calculatedVat,
-       final_total: finalTotal
-     });
-     
-     onTotalsChange(totals);
-   }
+   const timeoutId = setTimeout(() => {
+     if (onTotalsChange) {
+       const totals = {
+         subtotal: initialSubtotal,
+         vat: calculatedVat,
+         total: finalTotal,
+         discount_percentage: effectiveDiscountPercentage,
+         discount_value: finalDiscount > 0 ? finalDiscount : undefined,
+         subtotal_after_discount: finalDiscount > 0 ? discountedSubtotal : undefined
+       };
+       
+       console.log('Calculated totals:', {
+         original_subtotal: initialSubtotal,
+         discount: finalDiscount,
+         discounted_subtotal: discountedSubtotal,
+         vat: calculatedVat,
+         final_total: finalTotal,
+         effective_discount_percentage: effectiveDiscountPercentage
+       });
+       
+       onTotalsChange(totals);
+     }
+   }, 0);
+
+   return () => clearTimeout(timeoutId);
  }, [
-   initialSubtotal, 
-   calculatedVat, 
-   finalTotal, 
-   discountPercent, 
-   finalDiscount, 
-   discountedSubtotal, 
+   initialSubtotal,
+   calculatedVat,
+   finalTotal,
+   discountPercent,
+   finalDiscount,
+   discountedSubtotal,
+   effectiveDiscountPercentage,
    onTotalsChange
  ]);
 
@@ -89,10 +95,10 @@ const finalTotal = Number((discountedSubtotal + calculatedVat).toFixed(2));
    <Card>
      <CardContent className="p-4">
        <div className="space-y-2">
-       <div className="flex justify-between items-center text-sm">
-  <span className="text-muted-foreground">Original Subtotal (excl VAT):</span>
-  <span>R{initialSubtotal.toFixed(2)}</span>
-</div>
+         <div className="flex justify-between items-center text-sm">
+           <span className="text-muted-foreground">Original Subtotal (excl VAT):</span>
+           <span>R{initialSubtotal.toFixed(2)}</span>
+         </div>
          
          <div className="flex justify-between items-center gap-2">
            <div className="flex items-center gap-2">

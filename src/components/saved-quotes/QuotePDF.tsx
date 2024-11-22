@@ -18,8 +18,8 @@ Font.register({
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
-    fontSize: 10,
+    padding: 20,
+    fontSize: 9,
     fontFamily: 'Open Sans',
     color: '#2b2d42',
     backgroundColor: '#ffffff',
@@ -27,83 +27,87 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
-    borderBottom: '2pt solid #1a5f7a',
-    paddingBottom: 20,
+    marginBottom: 15,
+    borderBottom: '1pt solid #1a5f7a',
+    paddingBottom: 10,
   },
   logo: {
-    width: 150,
+    width: 120,
   },
   title: {
     textAlign: 'right',
   },
   titleText: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 700,
     color: '#1a5f7a',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   quoteRef: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#457b9d',
     fontWeight: 600,
   },
   quoteDate: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#6c757d',
-    marginTop: 4,
+    marginTop: 2,
   },
   addresses: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 15,
   },
   addressBlock: {
     width: '48%',
-    padding: 15,
+    padding: 10,
     backgroundColor: '#f8f9fa',
-    borderRadius: 4,
+    borderRadius: 3,
   },
   addressTitle: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 700,
     color: '#1a5f7a',
-    marginBottom: 8,
+    marginBottom: 4,
     textTransform: 'uppercase',
   },
   addressText: {
-    marginBottom: 4,
-    fontSize: 10,
-    lineHeight: 1.4,
+    marginBottom: 2,
+    fontSize: 9,
+    lineHeight: 1.3,
   },
   companyName: {
     fontWeight: 600,
-    fontSize: 11,
-    marginBottom: 6,
+    fontSize: 10,
+    marginBottom: 3,
   },
   table: {
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#1a5f7a',
-    padding: 8,
+    padding: 6,
     color: 'white',
     fontWeight: 600,
-    fontSize: 10,
+    fontSize: 9,
     marginBottom: 1,
   },
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#dee2e6',
-    padding: 8,
+    padding: 6,
     backgroundColor: '#f8f9fa',
     marginBottom: 1,
   },
   descriptionCol: {
     width: '60%',
+  },
+  descriptionText: {
+    fontSize: 9,
+    lineHeight: 1.3,
   },
   quantityCol: {
     width: '20%',
@@ -114,17 +118,17 @@ const styles = StyleSheet.create({
   },
   totalsSection: {
     alignSelf: 'flex-end',
-    width: '40%',
-    marginTop: 20,
+    width: '35%',
+    marginTop: 10,
     backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 4,
+    padding: 10,
+    borderRadius: 3,
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
-    fontSize: 10,
+    marginBottom: 3,
+    fontSize: 9,
   },
   totalLabel: {
     color: '#6c757d',
@@ -134,35 +138,35 @@ const styles = StyleSheet.create({
   },
   discountValue: {
     fontWeight: 600,
-    color: '#dc2626', // red color for discount
+    color: '#dc2626',
   },
   grandTotal: {
-    borderTopWidth: 2,
+    borderTopWidth: 1,
     borderTopColor: '#1a5f7a',
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: 4,
+    paddingTop: 4,
   },
   grandTotalLabel: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 700,
     color: '#1a5f7a',
   },
   grandTotalValue: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 700,
     color: '#1a5f7a',
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
-    left: 30,
-    right: 30,
+    bottom: 20,
+    left: 20,
+    right: 20,
     textAlign: 'center',
-    paddingTop: 10,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#dee2e6',
     color: '#6c757d',
-    fontSize: 8,
+    fontSize: 7,
   },
 });
 
@@ -171,15 +175,32 @@ export function QuotePDF({ quote }: QuotePDFProps) {
     `R${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
   const formatDescription = (description: string) => {
-    return description.split('\n')
+    const lines = description.split('\n')
       .filter(line => 
         !line.includes('Subtotal:') && 
         !line.includes('VAT:') && 
         !line.includes('Total:') && 
         !line.includes('Setup Fee:') && 
         !line.includes('Price:')
-      )
-      .join('\n');
+      );
+
+    // Filter out empty finishing options section
+    const finishingOptionsIndex = lines.findIndex(line => line === 'Finishing Options:');
+    if (finishingOptionsIndex !== -1) {
+      const nextLines = lines.slice(finishingOptionsIndex + 1);
+      const hasValidFinishingOptions = nextLines.some(line => 
+        line.startsWith('- ') && 
+        !line.includes('- -') && 
+        line.trim() !== '-'
+      );
+
+      if (!hasValidFinishingOptions) {
+        // Remove the "Finishing Options:" line and any empty options
+        lines.splice(finishingOptionsIndex);
+      }
+    }
+
+    return lines;
   };
 
   const formatCustomerName = () => {
@@ -263,9 +284,11 @@ export function QuotePDF({ quote }: QuotePDFProps) {
           </View>
           {quote.quote_items.map((item, index) => (
             <View key={item.item_id || index} style={styles.tableRow}>
-              <Text style={styles.descriptionCol}>
-                {formatDescription(item.description)}
-              </Text>
+              <View style={styles.descriptionCol}>
+                {formatDescription(item.description).map((line, i) => (
+                  <Text key={i} style={styles.descriptionText}>{line}</Text>
+                ))}
+              </View>
               <Text style={styles.quantityCol}>{item.quantity}</Text>
               <Text style={styles.totalCol}>{formatCurrency(item.total)}</Text>
             </View>

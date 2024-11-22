@@ -1,5 +1,5 @@
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Label } from '../ui/label';
+import { Separator } from '../ui/separator';
 
 interface LayoutResult {
   repeats: number;
@@ -11,14 +11,12 @@ interface LayoutResult {
 interface LayoutCalculationsProps {
   layoutResult: LayoutResult | null;
   sheetsRequired: number;
-  quantity: number;
   selectedSheetSize: string;
 }
 
 export function LayoutCalculations({ 
   layoutResult, 
-  sheetsRequired, 
-  quantity, 
+  sheetsRequired,
   selectedSheetSize 
 }: LayoutCalculationsProps) {
   return (
@@ -49,7 +47,7 @@ export function LayoutCalculations({
           <div className="space-y-1">
             <Label className="text-sm text-muted-foreground">Sheets Required</Label>
             <p className="font-medium">
-              {layoutResult ? `${sheetsRequired} sheets for ${quantity} units` : '-'}
+              {layoutResult ? `${sheetsRequired} Sheets` : '-'}
             </p>
           </div>
         </div>

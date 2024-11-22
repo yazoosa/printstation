@@ -1,15 +1,22 @@
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Textarea } from '../ui/textarea';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { Plus, Minus } from 'lucide-react';
-import { roundToNearestFive } from '@/components/quote-builder/utils/calculations';
+import { roundToNearestFive } from '../quote-builder/utils/calculations';
 
 export interface CartItemData {
- id: string;
- description: string;
- price: number;
- quantity: number;
- total: number;
+  id: string;
+  description: string;
+  price: number;
+  quantity: number;
+  total: number;
+  layoutInfo?: {
+    repeats: number;
+    across: number;
+    down: number;
+    isLandscape: boolean;
+    sheetsRequired: number;
+  };
 }
 
 interface CartItemProps {
@@ -84,7 +91,7 @@ export function CartItem({ item, isLast, onUpdate, onAdd, onRemove }: CartItemPr
          placeholder="Item description"
          value={item.description}
          onChange={(e) => onUpdate(item.id, { description: e.target.value })}
-         className="resize-none"
+         className="resize-none whitespace-pre-line"
        />
      </div>
      <div className="col-span-2">

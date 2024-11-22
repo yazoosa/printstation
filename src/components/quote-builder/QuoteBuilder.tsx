@@ -321,7 +321,6 @@ useEffect(() => {
         <LayoutCalculations
           layoutResult={layoutResult}
           sheetsRequired={sheetsRequired}
-          quantity={quantity}
           selectedSheetSize={selectedSheetSize}
         />
 
@@ -346,12 +345,14 @@ useEffect(() => {
           quantity={quantity}
           width={width}
           length={length}
-          selectedPaper={selectedPaperConfig}
+          selectedPaper={selectedPaperConfig || null}
           selectedPrintOption={printOptionLabel}
           finishingOptions={finishingRows}
           subtotal={subtotal}
           vat={vat}
           grandTotal={grandTotal}
+          layoutResult={layoutResult}
+          sheetsRequired={sheetsRequired}
         />
       </CardContent>
     </Card>

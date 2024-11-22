@@ -5,13 +5,23 @@ export type QuotePrimaryStatus = 'draft' | 'approved' | 'rejected';
 export type QuoteSecondaryStatus = 'emailed' | 'printed' | 'woo';
 export type QuoteStatus = QuotePrimaryStatus | QuoteSecondaryStatus;
 
+export interface LayoutCalculations {
+  id: number;
+  quote_id: number;
+  item_id: number;
+  optimal_layout: string;  // Store full text: "21 repeats per SRA3"
+  layout_details: string;  // Store full text: "3 across × 7 down - Portrait"
+  sheets_required: string; // Store full text: "12 sheets for 250 units"
+}
+
 export interface QuoteItem {
- item_id: string;
- quote_id: string;
- description: string;
- price: number;
- quantity: number;
- total: number;
+  item_id: number;  // Changed to number
+  quote_id: string;
+  description: string;
+  price: number;
+  quantity: number;
+  total: number;
+  layout_calculations?: LayoutCalculations;  
 }
 
 export interface QuoteHistory {
@@ -22,14 +32,6 @@ export interface QuoteHistory {
  changed_by: string;
  date_changed: string;
  notes: string;
-}
-
-export interface LayoutCalculations {
- id: number;
- quote_id: number;
- repeats: number | null;
- layout: number | null;
- sheets: number | null;
 }
 
 export interface SavedQuote {
@@ -55,5 +57,4 @@ export interface SavedQuote {
  quote_history: QuoteHistory[];
  customers: SupabaseCustomer;
  secondary_statuses?: QuoteSecondaryStatus[];
- layout_calculations?: LayoutCalculations;
 }

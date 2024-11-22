@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 import { ShoppingCart, Eye } from 'lucide-react';
-import { useCartStore } from '@/store/cartStore';
-import { useToast } from '@/hooks/use-toast';
+import { useCartStore } from '../../store/cartStore';
+import { useToast } from '../../hooks/use-toast';
 import { roundToNearestFive } from './utils/calculations';
 import type { GrandTotalActionsProps } from './types';
 
@@ -13,8 +13,11 @@ export function GrandTotalActions({
   selectedPaper,
   selectedPrintOption,
   finishingOptions,
-  grandTotal
-}: GrandTotalActionsProps) {
+  grandTotal,
+  layoutResult,
+  sheetsRequired,
+  // Remove selectedSheetSize since it's not being used
+}: Omit<GrandTotalActionsProps, 'selectedSheetSize'>) {  // Omit unused prop
   const navigate = useNavigate();
   const { items, addItem } = useCartStore();
   const { toast } = useToast();
@@ -27,9 +30,15 @@ export function GrandTotalActions({
       `Print: ${selectedPrintOption}`
     ];
 
-    if (finishingOptions.length > 0) {
-      lines.push('', 'Finishing Options:');
-      finishingOptions.forEach(opt => {
+    // Only add finishing options if there are any and they're not empty or "-"
+    const validFinishingOptions = finishingOptions.filter(opt => {
+      const description = `${opt.category} - ${opt.subCategory}`;
+      return description !== "- -" && description.trim() !== "-";
+    });
+
+    if (validFinishingOptions.length > 0) {
+      lines.push('Finishing Options:');
+      validFinishingOptions.forEach(opt => {
         const description = `${opt.category} - ${opt.subCategory}`;
         if (opt.quantity !== quantity) {
           lines.push(`- ${description} (Qty: ${opt.quantity})`);
@@ -43,7 +52,6 @@ export function GrandTotalActions({
   };
 
   const handleAddToCart = () => {
-    // Round the price before adding to cart
     const roundedPrice = roundToNearestFive(grandTotal);
     
     addItem({
@@ -51,6 +59,13 @@ export function GrandTotalActions({
       price: roundedPrice,
       quantity: 1,
       total: roundedPrice,
+      layoutInfo: layoutResult ? {
+        repeats: layoutResult.repeats,
+        across: layoutResult.across,
+        down: layoutResult.down,
+        isLandscape: layoutResult.isLandscape,
+        sheetsRequired: sheetsRequired
+      } : undefined
     });
 
     toast({
